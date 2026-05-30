@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 赋能股票交易/投资 — 全球产业地图</title>
+<style>
+  :root{
+    --bg:#0d1117; --bg2:#161b22; --bg3:#1c2330; --border:#2d3748;
+    --text:#e6edf3; --muted:#8b949e; --dim:#6e7681;
+    --accent:#58a6ff; --accent2:#7ee787; --warn:#f0883e; --danger:#f85149;
+    --purple:#bc8cff; --pink:#f778ba; --teal:#39c5cf; --gold:#e3b341;
+    --card-radius:14px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:radial-gradient(ellipse at top,#1a2230 0%,#0d1117 55%);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Segoe UI,sans-serif;
+    line-height:1.7; font-size:15px; padding-bottom:80px;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:0 22px;}
+
+  /* Hero */
+  header.hero{
+    text-align:center; padding:64px 22px 40px;
+    border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg,rgba(88,166,255,.06),transparent);
+  }
+  .hero .kicker{color:var(--accent); font-size:13px; letter-spacing:3px; text-transform:uppercase; font-weight:600;}
+  .hero h1{font-size:clamp(26px,4.5vw,42px); font-weight:800; margin:14px 0 10px; letter-spacing:-.5px;
+    background:linear-gradient(90deg,#fff,#9fc7ff); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;}
+  .hero .sub{color:var(--muted); font-size:15px; max-width:680px; margin:0 auto;}
+  .meta-row{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:22px;}
+  .chip{background:var(--bg2); border:1px solid var(--border); color:var(--muted);
+    padding:5px 13px; border-radius:999px; font-size:12.5px;}
+  .chip b{color:var(--text); font-weight:600;}
+  .disclaimer{margin:26px auto 0; max-width:740px; background:rgba(240,136,62,.08);
+    border:1px solid rgba(240,136,62,.3); border-radius:10px; padding:12px 18px; font-size:13.5px; color:#f0c08e;}
+
+  /* Stats strip */
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:38px 0;}
+  .stat{background:var(--bg2); border:1px solid var(--border); border-radius:var(--card-radius); padding:18px; text-align:center;}
+  .stat .num{font-size:26px; font-weight:800; color:var(--accent2);}
+  .stat .lbl{font-size:12px; color:var(--muted); margin-top:4px;}
+
+  /* Section */
+  section{margin:50px 0;}
+  h2{font-size:22px; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:10px;}
+  h2 .idx{display:inline-flex; width:30px; height:30px; align-items:center; justify-content:center;
+    background:var(--accent); color:#0d1117; border-radius:8px; font-size:15px; font-weight:800;}
+  .sec-sub{color:var(--dim); font-size:13.5px; margin-bottom:22px; padding-left:40px;}
+
+  /* Track cards */
+  .tracks{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px;}
+  .track{background:var(--bg2); border:1px solid var(--border); border-radius:var(--card-radius);
+    padding:20px; position:relative; overflow:hidden; transition:transform .15s,border-color .15s;}
+  .track:hover{transform:translateY(-3px); border-color:var(--accent);}
+  .track::before{content:""; position:absolute; top:0; left:0; width:100%; height:3px; background:var(--c,var(--accent));}
+  .track .t-num{font-size:12px; color:var(--c,var(--accent)); font-weight:700; letter-spacing:1px;}
+  .track h3{font-size:17px; margin:6px 0 4px;}
+  .track .do{color:var(--muted); font-size:13px; min-height:36px;}
+  .track .row{display:flex; gap:7px; margin-top:12px; font-size:12.5px;}
+  .track .row .k{color:var(--dim); min-width:52px; flex-shrink:0;}
+  .track .row .v{color:var(--text);}
+  .badge{display:inline-block; font-size:11px; padding:2px 8px; border-radius:6px; font-weight:600; margin-top:14px;}
+  .b-high{background:rgba(126,231,135,.15); color:var(--accent2);}
+  .b-med{background:rgba(227,179,65,.15); color:var(--gold);}
+
+  /* Tables */
+  .tbl-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:var(--card-radius); background:var(--bg2);}
+  table{width:100%; border-collapse:collapse; font-size:13.5px; min-width:560px;}
+  th{background:var(--bg3); color:var(--accent); text-align:left; padding:11px 14px; font-weight:600; border-bottom:1px solid var(--border); white-space:nowrap;}
+  td{padding:11px 14px; border-bottom:1px solid var(--border); color:var(--text); vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(88,166,255,.04);}
+  td b,th b{color:#fff;}
+  .no{color:var(--danger); font-weight:600;}
+  .yes{color:var(--accent2); font-weight:600;}
+  .q{color:var(--warn); font-weight:600;}
+
+  /* Callout */
+  .callout{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(188,140,255,.05));
+    border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:10px;
+    padding:14px 18px; margin:16px 0; font-size:13.5px; color:#c9d7ee;}
+  .callout.warn{border-left-color:var(--warn); background:rgba(240,136,62,.06);}
+  .callout b{color:#fff;}
+
+  /* Architecture tree */
+  .arch{background:var(--bg2); border:1px solid var(--border); border-radius:var(--card-radius); padding:22px; margin:16px 0;}
+  .arch pre{font-family:"SF Mono",Menlo,Consolas,monospace; font-size:12.5px; line-height:1.9; color:var(--teal); white-space:pre; overflow-x:auto;}
+
+  /* Two-col FinLLM tension */
+  .tension{display:grid; grid-template-columns:1fr auto 1fr; gap:16px; align-items:center; margin:16px 0;}
+  .t-card{background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:18px;}
+  .t-card h4{font-size:15px; margin-bottom:8px;}
+  .t-card .cost{font-size:24px; font-weight:800; margin:8px 0;}
+  .t-card.prop{border-top:3px solid var(--pink);} .t-card.prop .cost{color:var(--pink);}
+  .t-card.open{border-top:3px solid var(--accent2);} .t-card.open .cost{color:var(--accent2);}
+  .t-card ul{list-style:none; font-size:12.5px; color:var(--muted);}
+  .t-card li{padding:3px 0; padding-left:16px; position:relative;}
+  .t-card li::before{content:"›"; position:absolute; left:0; color:var(--dim);}
+  .vs{font-size:18px; font-weight:800; color:var(--dim); text-align:center;}
+
+  /* Gap list */
+  .gaps{display:grid; gap:12px;}
+  .gap{background:var(--bg2); border:1px solid var(--border); border-radius:10px; padding:14px 18px; border-left:3px solid var(--danger);}
+  .gap.refute{border-left-color:var(--dim);}
+  .gap h4{font-size:14px; margin-bottom:4px;}
+  .gap p{font-size:13px; color:var(--muted);}
+
+  /* refs */
+  .refs{background:var(--bg2); border:1px solid var(--border); border-radius:var(--card-radius); padding:20px; font-size:13px;}
+  .refs .grp{margin-bottom:12px;}
+  .refs .grp b{color:var(--accent); display:block; margin-bottom:4px; font-size:12.5px;}
+  .refs code{background:var(--bg3); padding:2px 7px; border-radius:5px; color:var(--teal); font-size:12px; margin:2px 3px 2px 0; display:inline-block;}
+
+  footer{text-align:center; color:var(--dim); font-size:12.5px; margin-top:60px; padding-top:24px; border-top:1px solid var(--border);}
+
+  /* TOC */
+  nav.toc{position:sticky; top:0; z-index:10; background:rgba(13,17,23,.85); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border); padding:10px 0;}
+  nav.toc .wrap{display:flex; gap:6px; flex-wrap:wrap; justify-content:center;}
+  nav.toc a{color:var(--muted); text-decoration:none; font-size:12.5px; padding:4px 11px; border-radius:7px; transition:.15s;}
+  nav.toc a:hover{color:var(--accent); background:var(--bg2);}
+
+  @media(max-width:640px){
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .tension{grid-template-columns:1fr;} .vs{padding:6px 0;}
+    .sec-sub{padding-left:0;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="kicker">Industry Map · 2026-05-30</div>
+  <h1>AI 赋能股票交易 / 投资<br>全球产业地图</h1>
+  <p class="sub">把"用 AI 赋能股票交易"这件事拆成可对比的产业地图:六大赛道 × 技术路线 × 信息来源 × 目标用户。参照样本:同花顺 AI 助手(问财)。</p>
+  <div class="meta-row">
+    <span class="chip">范围 <b>全球全景(中美欧并重)</b></span>
+    <span class="chip">立场 <b>中立产业地图</b></span>
+    <span class="chip">方法 <b>deep-research · 102 agents</b></span>
+    <span class="chip">验证 <b>22/25 claim 通过(3票对抗)</b></span>
+  </div>
+  <div class="disclaimer">⚠️ 本报告是中立产业地图,基于多源交叉验证,不对任何特定个人系统做评价或定位。市场规模为区间估计,产品/模型清单在快速迭代领域 6–12 个月后可能过时。</div>
+</header>
+
+<nav class="toc">
+  <div class="wrap">
+    <a href="#tracks">六大赛道</a>
+    <a href="#detail">逐赛道拆解</a>
+    <a href="#tech">技术谱系</a>
+    <a href="#data">信息来源</a>
+    <a href="#users">用户分层</a>
+    <a href="#ref">参照样本</a>
+    <a href="#gap">证据与缺口</a>
+    <a href="#cite">引用源</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div class="stats">
+    <div class="stat"><div class="num">6</div><div class="lbl">产业赛道</div></div>
+    <div class="stat"><div class="num">13+</div><div class="lbl">代表产品</div></div>
+    <div class="stat"><div class="num">$418亿</div><div class="lbl">Robo-advisor 2030 预测</div></div>
+    <div class="stat"><div class="num">4个</div><div class="lbl">FinLLM 成本数量级差</div></div>
+  </div>
+
+  <!-- 1. TRACKS -->
+  <section id="tracks">
+    <h2><span class="idx">1</span>产业六大赛道总览</h2>
+    <p class="sec-sub">每条赛道做的事不同:有的打分,有的配置,有的对话,有的当底层模型,有的编排 Agent。</p>
+    <div class="tracks">
+
+      <div class="track" style="--c:var(--gold)">
+        <div class="t-num">TRACK 01</div>
+        <h3>AI 选股 / 评分</h3>
+        <p class="do">给个股打分/排序,预测跑赢概率</p>
+        <div class="row"><span class="k">技术</span><span class="v">传统量化 / 机器学习 / XAI</span></div>
+        <div class="row"><span class="k">代表</span><span class="v">Danelfin、妙想、问财</span></div>
+        <span class="badge b-high">置信度 high</span>
+      </div>
+
+      <div class="track" style="--c:var(--accent2)">
+        <div class="t-num">TRACK 02</div>
+        <h3>智能投顾 Robo-advisor</h3>
+        <p class="do">自动化资产配置与组合管理</p>
+        <div class="row"><span class="k">技术</span><span class="v">规则引擎 + 算法 + 人机混合</span></div>
+        <div class="row"><span class="k">代表</span><span class="v">Betterment、Wealthfront</span></div>
+        <span class="badge b-med">置信度 medium</span>
+      </div>
+
+      <div class="track" style="--c:var(--accent)">
+        <div class="t-num">TRACK 03 ★</div>
+        <h3>AI 经纪 / 对话式券商助手</h3>
+        <p class="do">把 AI 研究/对话嵌入经纪或情报平台</p>
+        <div class="row"><span class="k">技术</span><span class="v">LLM + RAG + 多智能体</span></div>
+        <div class="row"><span class="k">代表</span><span class="v">问财、Public Alpha、AlphaSense</span></div>
+        <span class="badge b-high">置信度 high</span>
+      </div>
+
+      <div class="track" style="--c:var(--pink)">
+        <div class="t-num">TRACK 04</div>
+        <h3>金融专用大模型 FinLLM</h3>
+        <p class="do">域内大模型作为底层能力</p>
+        <div class="row"><span class="k">技术</span><span class="v">专有全量训练 vs 开源微调</span></div>
+        <div class="row"><span class="k">代表</span><span class="v">BloombergGPT、FinGPT、FinBERT</span></div>
+        <span class="badge b-high">置信度 high</span>
+      </div>
+
+      <div class="track" style="--c:var(--purple)">
+        <div class="t-num">TRACK 05</div>
+        <h3>LLM-Agent 编排式交易/选股</h3>
+        <p class="do">多角色 Agent 协作出信号或挖因子</p>
+        <div class="row"><span class="k">技术</span><span class="v">多智能体编排 + RL + 记忆</span></div>
+        <div class="row"><span class="k">代表</span><span class="v">FinRobot、TradingAgents、QuantAgent</span></div>
+        <span class="badge b-high">置信度 high</span>
+      </div>
+
+      <div class="track" style="--c:var(--teal)">
+        <div class="t-num">TRACK 06</div>
+        <h3>信号跟踪 / 自定义分析助手</h3>
+        <p class="do">定期监控、对话式投研问答</p>
+        <div class="row"><span class="k">技术</span><span class="v">对话式应用 + 诊断引擎</span></div>
+        <div class="row"><span class="k">代表</span><span class="v">妙想、问财</span></div>
+        <span class="badge b-high">置信度 high</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 2. DETAIL -->
+  <section id="detail">
+    <h2><span class="idx">2</span>逐赛道拆解</h2>
+    <p class="sec-sub">核心对比维度:赛道 × 代表产品 × 技术主路线 × 目标用户。</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>赛道</th><th>代表产品</th><th>技术主路线</th><th>目标用户</th></tr></thead>
+        <tbody>
+          <tr><td><b>AI 选股/评分</b></td><td>Danelfin、问财、妙想</td><td>传统量化 ML / XAI(<span class="no">非 LLM</span>)</td><td>量化倾向散户(看重可解释)</td></tr>
+          <tr><td><b>智能投顾 Robo-advisor</b></td><td>Betterment、Wealthfront 类</td><td>规则引擎 + 配置算法 + 人机混合</td><td>大众零售(低门槛长期理财)</td></tr>
+          <tr><td><b>AI 经纪/对话助手</b> ★</td><td>问财、Public.com Alpha、AlphaSense</td><td>LLM + RAG + 多智能体</td><td>散户 / 机构投研分析师</td></tr>
+          <tr><td><b>金融专用大模型 FinLLM</b></td><td>BloombergGPT、FinGPT、FinBERT、FinMA</td><td>专有全量训练 vs 开源微调 LoRA</td><td>机构、量化团队、研究者</td></tr>
+          <tr><td><b>LLM-Agent 编排</b></td><td>FinRobot、TradingAgents、QuantAgent、AlphaGPT</td><td>多智能体编排 + RL + 记忆 + 辩论</td><td>量化研究者、AI 工程师、学术界</td></tr>
+          <tr><td><b>信号跟踪/自定义分析</b></td><td>妙想、问财</td><td>对话式问答 + 诊断引擎</td><td>散户</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">💡 <b>关键洞察(赛道1)</b>:AI 选股这一类的"AI"主要是 <b>ML/量化,不是大模型</b>。Danelfin 每股每日分析 900+ 指标(600 技术面 / 150 基本面 / 150 情绪面)→ 1万+ 特征,打分逻辑透明可解释是卖点。</div>
+
+    <div class="callout">📊 <b>市场规模(赛道2)</b>:全球 Robo-advisor 2023 ≈ <b>66.1 亿美元</b> → 预计 2030 <b>418.3 亿美元</b>,CAGR <b>30.5%</b>;人机混合模式 2023 年占全球收入 <b>63.8%</b>,超过纯自动化。</div>
+
+    <div class="callout warn">🔌 <b>产业普遍现象(赛道3)</b>:Public Alpha 行情数据由第三方 <b>Xignite</b> 供给(Xignite 客户还含 Robinhood/SoFi/Betterment/Wealthfront)——<b>信息层多依赖第三方馈送,AI 能力是叠加层而非数据护城河。</b></div>
+
+    <h3 style="margin:28px 0 12px; font-size:16px; color:var(--pink)">赛道4:FinLLM 两条经济模型对立</h3>
+    <div class="tension">
+      <div class="t-card prop">
+        <h4>🏛 专有域内全量训练</h4>
+        <div class="cost">≈ $267 万</div>
+        <ul>
+          <li>BloombergGPT,500 亿参数</li>
+          <li>3630亿金融 + 3450亿通用 token</li>
+          <li>Bloomberg 专有金融语料</li>
+          <li>成本为第三方反推估值</li>
+        </ul>
+      </div>
+      <div class="vs">VS<br><span style="font-size:11px;color:var(--dim)">差 4 个数量级</span></div>
+      <div class="t-card open">
+        <h4>🔓 开源低成本微调</h4>
+        <div class="cost">&lt; $300 / 次</div>
+        <ul>
+          <li>FinGPT(AI4Finance)</li>
+          <li>LoRA 微调 Llama2 / ChatGLM2 / Falcon</li>
+          <li>公开数据 + FinGPT-RAG</li>
+          <li>把 FinLLM 能力平民化</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="margin:28px 0 12px; font-size:16px; color:var(--purple)">赛道5:LLM 交易 Agent 的两大架构</h3>
+    <div class="arch">
+<pre>LLM 交易 Agent  <span style="color:var(--dim)">(综述 arXiv 2408.06361)</span>
+├── <span style="color:var(--accent)">A. LLM 作为「交易员」</span>(直接出买/卖信号)
+│   ├── news-driven        新闻驱动
+│   ├── reflection-driven  反思/分层记忆 · FinMem、FinAgent
+│   ├── debate-driven      多智能体辩论 · TradingGPT、HAD
+│   └── RL-driven          回测奖励强化学习 · SEP、PPO
+└── <span style="color:var(--accent2)">B. LLM 作为「Alpha 矿工」</span>(产出因子 → 喂下游量化)
+    └── QuantAgent、AlphaGPT</pre>
+    </div>
+    <div class="callout"><b>FinRobot</b>:Financial Chain-of-Thought,把复杂金融问题分解为逻辑序列。<b>TradingAgents</b>:模拟真实交易公司角色(基本面/情绪/技术分析师 + 交易员 + 风控),LangGraph 编排。两者均开源。产业仍以研究原型为主,商业成熟产品稀缺。</div>
+  </section>
+
+  <!-- 3. TECH -->
+  <section id="tech">
+    <h2><span class="idx">3</span>技术实现路线谱系</h2>
+    <p class="sec-sub">横切视角:哪些是 LLM、哪些不是,各出现在哪条赛道。</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>技术路线</th><th>是 LLM?</th><th>出现赛道</th><th>代表</th></tr></thead>
+        <tbody>
+          <tr><td>传统量化 / 机器学习 / XAI</td><td><span class="no">否</span></td><td>AI 选股</td><td>Danelfin</td></tr>
+          <tr><td>规则引擎 + 配置算法</td><td><span class="no">否</span></td><td>Robo-advisor</td><td>Betterment 类</td></tr>
+          <tr><td>专有域内全量训练 LLM</td><td><span class="yes">是</span></td><td>FinLLM</td><td>BloombergGPT</td></tr>
+          <tr><td>开源微调 (LoRA) + RAG</td><td><span class="yes">是</span></td><td>FinLLM</td><td>FinGPT</td></tr>
+          <tr><td>对话式问答 + 诊断引擎</td><td><span class="yes">是</span></td><td>AI 经纪/对话助手</td><td>问财、妙想、Public Alpha、AlphaSense</td></tr>
+          <tr><td>LLM 多智能体编排 (+RL+记忆+辩论)</td><td><span class="yes">是</span></td><td>Agent 编排交易</td><td>FinRobot、TradingAgents</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 4. DATA -->
+  <section id="data">
+    <h2><span class="idx">4</span>信息来源维度对比</h2>
+    <p class="sec-sub">各产品的"原料"覆盖到哪——以及哪一类几乎没人公开用。</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>信息源类型</th><th>覆盖程度</th><th>备注</th></tr></thead>
+        <tbody>
+          <tr><td>技术面(K线/指标)</td><td><span class="yes">✅ 普遍</span></td><td>Danelfin 600 指标、各对话助手</td></tr>
+          <tr><td>基本面(财报/估值)</td><td><span class="yes">✅ 普遍</span></td><td>Danelfin 150、妙想/问财</td></tr>
+          <tr><td>情绪面 / 新闻舆情</td><td><span class="yes">✅ 普遍</span></td><td>Danelfin 150、news-driven Agent</td></tr>
+          <tr><td>第三方行情馈送</td><td><span class="yes">✅ 普遍</span></td><td>Xignite 给 Public/Robinhood/SoFi 等</td></tr>
+          <tr><td><b>另类数据</b>(卫星/信用卡/流量)</td><td><span class="q">❓ 证据缺失</span></td><td>已验证产品中几乎缺席,实际应用程度未知</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 5. USERS -->
+  <section id="users">
+    <h2><span class="idx">5</span>目标用户分层</h2>
+    <p class="sec-sub">从大众散户到 AI 工程师,五层用户对应不同赛道。</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>用户层</th><th>对应赛道 / 产品</th></tr></thead>
+        <tbody>
+          <tr><td>大众零售(低门槛理财)</td><td>Robo-advisor</td></tr>
+          <tr><td>量化倾向散户(要可解释)</td><td>Danelfin</td></tr>
+          <tr><td>自然语言选股散户</td><td>问财、妙想、Public Alpha</td></tr>
+          <tr><td>机构投研分析师</td><td>AlphaSense</td></tr>
+          <tr><td>量化团队 / AI 工程师 / 研究者</td><td>FinLLM、Agent 编排系统(多为开源原型)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 6. REFERENCE -->
+  <section id="ref">
+    <h2><span class="idx">6</span>参照样本:同花顺 / 东方财富</h2>
+    <p class="sec-sub">中国大型金融信息平台的对话式投研助理,作为对标参照样本。</p>
+    <div class="tracks">
+      <div class="track" style="--c:var(--accent)">
+        <div class="t-num">同花顺</div>
+        <h3>问财 (Wencai)</h3>
+        <p class="do">自然语言选股问答引擎(iwencai.com),A 股典型样本。</p>
+        <div class="row"><span class="k">归属</span><span class="v">同花顺 10jqka(300033)</span></div>
+        <div class="row"><span class="k">路线</span><span class="v">对话式问答 + 选股</span></div>
+      </div>
+      <div class="track" style="--c:var(--gold)">
+        <div class="t-num">东方财富</div>
+        <h3>妙想</h3>
+        <p class="do">自研金融垂直大模型,2025.3 起接入东方财富 APP 免费开放。</p>
+        <div class="row"><span class="k">功能</span><span class="v">问答 / 诊断 / 选股 / 热点解读</span></div>
+        <div class="row"><span class="k">合规</span><span class="v">国内首批通过网信办 CAC 备案(约 2023.12)</span></div>
+      </div>
+    </div>
+    <div class="callout">技术路线偏 <b>问答 + 诊断 + 选股的对话式应用</b>:C 端免费引流,变现靠平台生态。</div>
+  </section>
+
+  <!-- 7. GAPS -->
+  <section id="gap">
+    <h2><span class="idx">7</span>证据强度与缺口</h2>
+    <p class="sec-sub">诚实披露:哪些说法被否决了,哪些维度证据不足。</p>
+
+    <h3 style="font-size:15px; margin:6px 0 12px; color:var(--dim)">已被否决的说法(未纳入结论)</h3>
+    <div class="gaps" style="margin-bottom:24px">
+      <div class="gap refute"><h4>妙想"金融超脑数据库 + 独家信源分级 RAG"</h4><p>技术细节属营销表述,无法独立核实(1-2 票否决)</p></div>
+      <div class="gap refute"><h4>BloombergGPT"不损失通用基准性能的混合训练验证"</h4><p>1-2 票否决</p></div>
+      <div class="gap refute"><h4>AlphaSense"1500M+ 文档 RAG + 可定制 agent"具体技术路线</h4><p>0-3 票否决</p></div>
+    </div>
+
+    <h3 style="font-size:15px; margin:6px 0 12px; color:var(--danger)">主要缺口(后续可补)</h3>
+    <div class="gaps">
+      <div class="gap"><h4>🇪🇺 欧洲市场几乎空白</h4><p>题目要求中美欧并重,但欧洲本土代表产品、市场规模、MiFID II 对 robo-advisory 的监管影响均证据不足(仅 Danelfin 部分覆盖欧股)。</p></div>
+      <div class="gap"><h4>📉 单产品用户量/AUM/营收缺失</h4><p>除 robo-advisory 总市场规模外,Danelfin/妙想/问财/Public Alpha/AlphaSense 的具体规模均无证据。</p></div>
+      <div class="gap"><h4>💰 商业模式量化对比不足</h4><p>订阅价/佣金/按 AUM 收费/B2B SaaS 授权 vs B2C 免费引流缺乏可比数据。</p></div>
+      <div class="gap"><h4>🛰 另类数据维度缺席</h4><p>卫星/信用卡/网络流量等在各产品的实际应用程度未知。</p></div>
+    </div>
+  </section>
+
+  <!-- 8. CITE -->
+  <section id="cite">
+    <h2><span class="idx">8</span>引用源汇总</h2>
+    <p class="sec-sub">所有结论可溯源。</p>
+    <div class="refs">
+      <div class="grp"><b>产品官网 / 披露</b>
+        <code>danelfin.com</code><code>10jqka.com.cn</code><code>iwencai.com</code><code>public.com/alpha</code><code>alpha-sense.com</code><code>xignite.com</code><code>emmiaoxiang.eastmoney.com</code><code>xuangu.eastmoney.com</code>
+      </div>
+      <div class="grp"><b>监管 / 媒体</b>
+        <code>cac.gov.cn</code><code>jjckb.cn 经济参考报</code><code>jiemian.com</code>
+      </div>
+      <div class="grp"><b>学术(arXiv)</b>
+        <code>2303.17564 BloombergGPT</code><code>2402.02315 FinLLM综述</code><code>2306.06031 FinGPT</code><code>2310.04027 FinGPT-RAG</code><code>2405.14767 FinRobot</code><code>2412.20138 TradingAgents</code><code>2408.06361 LLM交易Agent综述</code><code>2311.13743 FinMem</code><code>2402.18485 FinAgent</code><code>2309.03736 TradingGPT</code><code>2402.03659 SEP</code>
+      </div>
+      <div class="grp"><b>市场研究</b>
+        <code>Grand View Research · robo-advisory market</code>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    AI 赋能股票交易/投资 — 全球产业地图 · 2026-05-30<br>
+    方法:deep-research harness(五路并行搜索 → 抓取 → 3票对抗式验证 → 带引用综合,102 agents)· 中立产业地图视角
+  </footer>
+
+</div>
+</body>
+</html>
