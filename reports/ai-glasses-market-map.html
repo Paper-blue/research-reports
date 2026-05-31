@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 眼镜,现在到底是个什么市场 — 全球全景</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#16181c; --surface:#1c1f24; --surface-2:#23262c;
+    --border:#2a2e35; --border-vis:#3a3f47;
+    --t-disabled:#6b7280; --t-secondary:#9aa1ab; --t-primary:#d4d8de; --t-display:#eef0f3;
+    --accent:#e0494f; --success:#5bb06d; --warning:#d8b056;
+    --doto:"Doto","Space Mono",monospace;
+    --sans:"Space Grotesk","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    --mono:"Space Mono","JetBrains Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--black); color:var(--t-primary); font-family:var(--sans); font-weight:300; line-height:1.7; font-size:16px; -webkit-font-smoothing:antialiased; padding-bottom:96px;}
+  .wrap{max-width:920px; margin:0 auto; padding:0 24px;}
+  .label{font-family:var(--mono); text-transform:uppercase; letter-spacing:0.08em; font-size:11px; color:var(--t-secondary); font-weight:400;}
+  .mono{font-family:var(--mono);}
+  .dotbg{background-image:radial-gradient(circle, var(--border) 0.5px, transparent 0.5px); background-size:14px 14px;}
+
+  header{padding:96px 24px 64px; border-bottom:1px solid var(--border);}
+  header .inner{max-width:920px; margin:0 auto;}
+  header .kicker{font-family:var(--mono); text-transform:uppercase; letter-spacing:0.1em; font-size:11px; color:var(--t-secondary);}
+  header .kicker .dot{color:var(--accent);}
+  h1{font-family:var(--doto); font-weight:600; font-size:clamp(38px,7.5vw,76px); line-height:1.0; letter-spacing:-0.03em; color:var(--t-display); margin:24px 0 0;}
+  header .sub{font-size:18px; color:var(--t-secondary); max-width:640px; margin-top:24px; font-weight:300;}
+  .meta{display:flex; flex-wrap:wrap; gap:8px 24px; margin-top:48px;}
+  .meta div{display:flex; flex-direction:column; gap:4px;}
+  .meta .k{font-family:var(--mono); text-transform:uppercase; letter-spacing:0.08em; font-size:10px; color:var(--t-disabled);}
+  .meta .v{font-family:var(--mono); font-size:13px; color:var(--t-primary);}
+  .note{margin-top:40px; padding:14px 0; border-top:1px solid var(--border); font-size:13px; color:var(--t-disabled); max-width:680px;}
+  .note b{color:var(--t-secondary); font-weight:400;}
+
+  nav{position:sticky; top:0; z-index:20; background:rgba(22,24,28,0.9); border-bottom:1px solid var(--border); backdrop-filter:blur(8px);}
+  nav .inner{max-width:920px; margin:0 auto; padding:12px 24px; display:flex; gap:18px; flex-wrap:wrap;}
+  nav a{font-family:var(--mono); text-transform:uppercase; letter-spacing:0.06em; font-size:11px; color:var(--t-disabled); text-decoration:none; padding:4px 0;}
+  nav a:hover{color:var(--t-display);}
+
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); margin:64px 0; border:1px solid var(--border);}
+  .stat{background:var(--black); padding:28px 20px;}
+  .stat .n{font-family:var(--doto); font-weight:600; font-size:clamp(26px,4.6vw,44px); color:var(--t-display); line-height:1; letter-spacing:-0.02em;}
+  .stat .u{font-family:var(--mono); font-size:12px; color:var(--t-secondary); margin-top:10px; text-transform:uppercase; letter-spacing:0.06em;}
+
+  section{padding:72px 0 0;}
+  .sec-head{display:flex; align-items:baseline; gap:16px; margin-bottom:8px;}
+  .sec-head .num{font-family:var(--mono); font-size:13px; color:var(--accent); font-weight:700;}
+  h2{font-family:var(--sans); font-weight:500; font-size:28px; color:var(--t-display); letter-spacing:-0.01em;}
+  .sec-sub{color:var(--t-secondary); font-size:15px; margin:0 0 40px 40px; font-weight:300;}
+  @media(max-width:600px){.sec-sub{margin-left:0;}}
+
+  .track{padding:40px 0; border-top:1px solid var(--border);}
+  .track:first-of-type{border-top:none;}
+  .track-top{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;}
+  .track-top .tnum{font-family:var(--doto); font-weight:600; font-size:40px; color:var(--t-disabled); line-height:1; letter-spacing:-0.02em;}
+  .track-top h3{font-family:var(--sans); font-weight:500; font-size:22px; color:var(--t-display);}
+  .track-top .star{font-family:var(--mono); font-size:10px; color:var(--accent); border:1px solid var(--accent); padding:2px 8px; border-radius:999px; letter-spacing:0.06em; align-self:center;}
+  .track .one-liner{font-size:17px; color:var(--t-primary); margin:16px 0 0; font-weight:300;}
+  .track .plain{font-size:15px; color:var(--t-secondary); margin-top:12px; line-height:1.8;}
+  .track .plain b{color:var(--t-primary); font-weight:500;}
+
+  .demo{margin-top:28px; display:grid; grid-template-columns:1.2fr 1fr; gap:24px; align-items:start;}
+  @media(max-width:720px){.demo{grid-template-columns:1fr;}}
+  .demo .shot{border:1px solid var(--border-vis); border-radius:8px; overflow:hidden; background:var(--surface);}
+  .demo .shot img{width:100%; display:block;}
+  .demo .shot .cap{font-family:var(--mono); font-size:10px; color:var(--t-disabled); text-transform:uppercase; letter-spacing:0.06em; padding:8px 12px; border-top:1px solid var(--border); background:var(--surface);}
+  .demo .how .label{display:block; margin-bottom:10px;}
+  .demo .how p{font-size:14px; color:var(--t-secondary); line-height:1.75; margin-bottom:12px;}
+  .demo .how .ex{font-family:var(--mono); font-size:12.5px; color:var(--t-primary); background:var(--surface); border-left:2px solid var(--accent); padding:10px 14px; margin-top:6px; line-height:1.6;}
+
+  .segwrap{margin-top:24px;}
+  .segwrap .top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;}
+  .segwrap .top .l{font-family:var(--mono); text-transform:uppercase; letter-spacing:0.06em; font-size:11px; color:var(--t-secondary);}
+  .segwrap .top .r{font-family:var(--doto); font-weight:600; font-size:22px; color:var(--t-display);}
+  .seg{display:flex; gap:2px;}
+  .seg span{flex:1; height:12px;}
+  .seg .on{background:var(--t-display);} .seg .on-r{background:var(--accent);} .seg .off{background:var(--border);}
+
+  .tbl-wrap{margin-top:8px; overflow-x:auto;}
+  table{width:100%; border-collapse:collapse; font-size:14px; min-width:560px;}
+  th{font-family:var(--mono); text-transform:uppercase; letter-spacing:0.06em; font-size:10px; color:var(--t-secondary); text-align:left; padding:12px 16px; border-bottom:1px solid var(--border-vis); font-weight:400;}
+  td{padding:14px 16px; border-bottom:1px solid var(--border); color:var(--t-primary); font-weight:300; vertical-align:top;}
+  td.mono,th.mono{font-family:var(--mono);}
+  .yes{color:var(--success); font-family:var(--mono); font-size:13px;}
+  .no{color:var(--accent); font-family:var(--mono); font-size:13px;}
+  .qq{color:var(--warning); font-family:var(--mono); font-size:13px;}
+
+  .call{margin-top:24px; padding:16px 20px; background:var(--surface); border-left:2px solid var(--border-vis); font-size:14px; color:var(--t-secondary); line-height:1.75;}
+  .call.red{border-left-color:var(--accent);}
+  .call b{color:var(--t-primary); font-weight:500;}
+  .call .label{display:block; margin-bottom:8px;}
+
+  .gap{padding:16px 0; border-bottom:1px solid var(--border);}
+  .gap h4{font-family:var(--sans); font-weight:500; font-size:15px; color:var(--t-primary); margin-bottom:6px;}
+  .gap.killed h4{color:var(--t-disabled);}
+  .gap p{font-size:13.5px; color:var(--t-secondary); font-weight:300;}
+
+  .refs{margin-top:24px;}
+  .refs .grp{padding:14px 0; border-bottom:1px solid var(--border);}
+  .refs .grp .label{display:block; margin-bottom:10px;}
+  .refs code{font-family:var(--mono); font-size:11.5px; color:var(--t-secondary); background:var(--surface); padding:3px 8px; border-radius:4px; margin:0 4px 4px 0; display:inline-block;}
+
+  footer{margin-top:80px; padding-top:32px; border-top:1px solid var(--border);}
+  footer .label{display:block; margin-bottom:8px;}
+  footer p{font-size:12px; color:var(--t-disabled); font-weight:300; line-height:1.7;}
+
+  @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<header class="dotbg">
+  <div class="inner">
+    <div class="kicker">产业地图 <span class="dot">●</span> 2026.05.31</div>
+    <h1>AI 眼镜<br>现在啥情况</h1>
+    <p class="sub">2025 年 AI 眼镜突然火了。它分几类、谁在卖、技术差在哪、值不值得买?一张看得懂的全球全景图。</p>
+    <div class="meta">
+      <div><span class="k">范围</span><span class="v">全球 · 中美为主</span></div>
+      <div><span class="k">时间</span><span class="v">2025-2026</span></div>
+      <div><span class="k">立场</span><span class="v">中立 · 可溯源</span></div>
+      <div><span class="k">配图</span><span class="v">官网实拍</span></div>
+    </div>
+    <p class="note"><b>说明</b> 中立行业地图,结论来自公开多源交叉验证(112 个 AI agent 协作、对抗式核查),不替任何品牌站台。份额数字口径不同差异大,看趋势别抠绝对值。这行业半年一变,名单会旧。配图为各品牌官网真实截图。</p>
+  </div>
+</header>
+
+<nav>
+  <div class="inner">
+    <a href="#big">先看大盘</a>
+    <a href="#types">分三类</a>
+    <a href="#products">代表产品</a>
+    <a href="#tech">技术差在哪</a>
+    <a href="#truth">残酷真相</a>
+    <a href="#gap">没搞清的</a>
+    <a href="#ref">出处</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div class="stats">
+    <div class="stat"><div class="n">+139<span style="font-size:0.5em">%</span></div><div class="u">H2 出货增速</div></div>
+    <div class="stat"><div class="n">725<span style="font-size:0.45em">万</span></div><div class="u">2025 出货量</div></div>
+    <div class="stat"><div class="n">82<span style="font-size:0.5em">%</span></div><div class="u">Meta 份额</div></div>
+    <div class="stat"><div class="n">3</div><div class="u">大分类</div></div>
+  </div>
+
+  <!-- BIG PICTURE -->
+  <section id="big">
+    <div class="sec-head"><span class="num">01</span><h2>先看大盘:真的爆了</h2></div>
+    <p class="sec-sub">不是炒概念,是真出货了。但"爆"的是其中一类,不是全部。</p>
+    <p class="plain">2025 下半年,全球智能眼镜出货同比 <b>+139%</b>。全年卖了约 <b>725 万台</b>,头一次占到整个 XR(扩展现实,VR/AR 那一摊)市场的一半。<b>但有个反差</b>:卖爆的几乎全是"带摄像头的 AI 眼镜"(像 Ray-Ban Meta),而大家最期待的"带显示屏的 AR 眼镜"其实还很小众——截至 2026 年,中国市场<b>没有一款带屏 AR 眼镜单品出货破 50 万台</b>。整体是"<b>热度高、销量低</b>"的早期阶段。</p>
+    <div class="call red"><span class="label">一句话格局</span><b>Meta 一家独大。</b>2025 年 Meta 卖了超 700 万台(是 2023+2024 两年合计的 3.5 倍),下半年全球份额 <b>82%</b>。中国厂商(小米、雷鸟、XREAL、Viture)挤进前五,但<b>各自份额都不到 5%</b>。</p></div>
+  </section>
+
+  <!-- TYPES -->
+  <section id="types">
+    <div class="sec-head"><span class="num">02</span><h2>AI 眼镜分三类</h2></div>
+    <p class="sec-sub">最简单的分法:看它有没有摄像头、有没有屏幕。这是 IDC、Counterpoint 这些机构的标准分法。</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>这一类</th><th>有啥</th><th>干啥用</th><th>代表</th><th class="mono">现状</th></tr></thead>
+        <tbody>
+          <tr><td><b>① 纯音频眼镜</b></td><td>只有喇叭,无摄像头无屏</td><td>听歌、接电话、语音助手</td><td>各家入门款</td><td><span class="qq">基础</span></td></tr>
+          <tr><td><b>② 摄像头+AI助手</b></td><td>有摄像头,<b>无屏</b></td><td>拍照录像、AI 看世界、翻译、问答</td><td>Ray-Ban Meta</td><td><span class="yes">最大最火</span></td></tr>
+          <tr><td><b>③ 带显示的 AR/HUD</b></td><td><b>有屏</b>(眼前能显示信息)</td><td>看导航、看字幕、看翻译、投屏看片</td><td>XREAL · 雷鸟 · Even G1</td><td><span class="qq">小众早期</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="call"><span class="label">关键分野</span>行业里最核心的一条线是 <b>"AI 眼镜" vs "AR 眼镜"</b>:前者(第②类)<b>没屏幕</b>,靠摄像头+AI+语音,便宜、像普通墨镜、现在卖得最好;后者(第③类)<b>有屏幕</b>,能在眼前叠加画面,是终极形态但还贵还难。<span class="mono" style="color:var(--t-disabled)">(HUD = 抬头显示,信息浮在你眼前;AR = 增强现实,虚拟画面叠到真实世界上)</span></div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section id="products">
+    <div class="sec-head"><span class="num">03</span><h2>代表产品,带官网实拍</h2></div>
+    <p class="sec-sub">四款各代表一种打法:无屏 AI、大屏看片、轻量 HUD、全彩 AR。</p>
+
+    <!-- Ray-Ban Meta -->
+    <div class="track">
+      <div class="track-top"><span class="tnum">①</span><h3>Ray-Ban Meta</h3><span class="star">★ 最火</span></div>
+      <p class="one-liner">长得就是副雷朋墨镜,但能拍照、能跟 AI 说话问它"我看到的是啥"。无屏。</p>
+      <p class="plain">第②类(摄像头+AI)的标杆,2025 年全球卖爆的就是它。<b>$299 起</b>,价格亲民是它能卖爆的关键。</p>
+      <div class="demo">
+        <div class="shot">
+          <img src="assets/glasses/rayban-meta.jpg" alt="Ray-Ban Meta 官网">
+          <div class="cap">meta.com · 官网实拍</div>
+        </div>
+        <div class="how">
+          <span class="label">怎么用</span>
+          <p>镜框角上有个 1200 万像素摄像头,能拍 3K 视频。说一句 "Hey Meta" 唤醒 AI(用 Llama 4 模型),它能描述你眼前的东西、念出看到的文字、报路。要连手机 App 用,续航约 8 小时。</p>
+          <div class="ex">"Hey Meta,我眼前这盆花是什么品种" → 它看一眼直接告诉你</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- XREAL One Pro -->
+    <div class="track">
+      <div class="track-top"><span class="tnum">②</span><h3>XREAL One Pro</h3></div>
+      <p class="one-liner">戴上像眼前挂了块大屏幕,主要拿来看片、打游戏、当电脑外接屏。</p>
+      <p class="plain">第③类里走"<b>大屏观影</b>"路线,用的是 <b>Birdbath 光学</b>(成像清楚但镜片偏暗、透光率低)。57 度视场角是消费 AR 里最大的之一。</p>
+      <div class="demo">
+        <div class="shot">
+          <img src="assets/glasses/xreal.jpg" alt="XREAL One Pro 官网">
+          <div class="cap">shop.xreal.com · 官网实拍</div>
+        </div>
+        <div class="how">
+          <span class="label">怎么用 / 形态</span>
+          <p>索尼 Micro-OLED 屏,1080p、120Hz、600 尼特。新款棱镜比老款薄 44%。多数要插手机/电脑/游戏机当画面源(它本身偏"显示器",不是独立电脑)。</p>
+          <div class="ex">插上 Switch / 手机 → 眼前出现一块悬浮大屏看片打游戏</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Even Realities G1 -->
+    <div class="track">
+      <div class="track-top"><span class="tnum">③</span><h3>Even Realities G1</h3></div>
+      <p class="one-liner">看着就是副普通近视眼镜,但镜片里能浮出一行绿色字——导航、翻译、提词。无摄像头。</p>
+      <p class="plain">第③类里走"<b>轻量 HUD</b>"路线,用 <b>光波导</b>(镜片透亮、像真眼镜)。<b>$599 起</b>(带近视片 $749-799),约是 Ray-Ban Meta 的两倍。主打日常隐形佩戴。</p>
+      <div class="demo">
+        <div class="shot">
+          <img src="assets/glasses/even-g1.jpg" alt="Even Realities G1 官网">
+          <div class="cap">evenrealities.com · 官网实拍</div>
+        </div>
+        <div class="how">
+          <span class="label">怎么用 / 形态</span>
+          <p>Micro-LED 投影 + 光波导,显示 640×200 的绿色单色字,浮在你前方 1-5 米。能实时翻译(说英文,译文蹦到眼前)、导航、记笔记。续航约 1.5 天,但<b>直射阳光下看不清</b>。</p>
+          <div class="ex">看外文菜单 → 眼前直接浮出中文翻译</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RayNeo X3 Pro -->
+    <div class="track">
+      <div class="track-top"><span class="tnum">④</span><h3>雷鸟 RayNeo X3 Pro</h3></div>
+      <p class="one-liner">中国厂商的全彩 AR 旗舰,想做"戴在脸上的安卓手机"。</p>
+      <p class="plain">第③类里冲"<b>全彩一体式</b>"——不靠外接,自己能跑 App。用<b>全彩刻蚀光波导 + Micro-LED</b>(和 Applied Materials 合研,号称减 95% 彩虹纹)。<b>8999 元起</b>(国补后 7649),高端档。</p>
+      <div class="demo">
+        <div class="shot">
+          <img src="assets/glasses/rayneo-x3.jpg" alt="雷鸟 X3 Pro 官网">
+          <div class="cap">rayneo.com · 官网实拍</div>
+        </div>
+        <div class="how">
+          <span class="label">怎么用 / 形态</span>
+          <p>骁龙 AR1 平台,自研萤火虫全彩 Micro-LED 光引擎(峰值 6000 尼特)。能跑安卓 App(抖音/Instagram/WhatsApp),支持 Apple Watch 手势、语音、手机遥控操作 3D 空间界面。</p>
+          <div class="ex">抬手在空中划一下 → 切换眼前悬浮的 App</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH -->
+  <section id="tech">
+    <div class="sec-head"><span class="num">04</span><h2>技术差在哪</h2></div>
+    <p class="sec-sub">两个核心:芯片(谁来算)、光学(屏幕怎么塞进镜片)。</p>
+
+    <p class="label" style="margin-top:8px;">芯片:几乎都是高通</p>
+    <p class="plain">无屏 AI 眼镜这一类,芯片基本被高通 <b>骁龙 AR1 平台</b>垄断——Ray-Ban Meta 用的就是它。新款 <b>AR1+</b> 更小更省电,而且能<b>在眼镜上本地跑一个小 AI 模型</b>(Llama 1B,不用联网、不依赖云)。这是个方向性转变:AI 从"靠云端"往"装进眼镜里"走。<span class="mono" style="color:var(--t-disabled)">(注:本地小模型是厂商现场演示,没有独立性能实测;高通也承认它质量比云端大模型差)</span></p>
+
+    <p class="label" style="margin-top:28px;">光学:Birdbath vs 光波导,各有死穴</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>光学方案</th><th>镜片透不透亮</th><th>优点</th><th>死穴</th><th>谁在用</th></tr></thead>
+        <tbody>
+          <tr><td><b>Birdbath</b></td><td><span class="no">暗(15-25%)</span></td><td>成像清楚、便宜、视场大</td><td>镜片偏墨镜,不像日常眼镜</td><td class="mono">XREAL</td></tr>
+          <tr><td><b>光波导 waveguide</b></td><td><span class="yes">透亮(&gt;85%)</span></td><td>像真眼镜、能日常戴</td><td>贵、画质和成本难两全</td><td class="mono">Even G1 / 雷鸟</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="call"><span class="label">光波导内部还分两派</span><b>反射式</b>:光效率高(差不多高一个数量级)、颜色准,但难做大视场。<b>衍射式</b>:能做薄、视场大(Magic Leap 演示过 70 度)、能量产更便宜,但光效率低。<b>两派都没法同时搞定"画质好"和"造得便宜"</b>——这是物理层面的取舍,不是谁不努力。</div>
+  </section>
+
+  <!-- TRUTH -->
+  <section id="truth">
+    <div class="sec-head"><span class="num">05</span><h2>残酷真相:AR 眼镜还没成</h2></div>
+    <p class="sec-sub">技术天花板很高,但能买到的产品还差得远。</p>
+    <p class="plain"><b>技术天花板</b>是 Meta 的 Orion(2024 年展示):70 度视场、全彩、效果惊艳。但<b>单台造价约 1 万美元、续航才 2 小时、要配一个神经手环 + 一个无线计算盒三件套</b>,只造了约 1000 台给内部演示,<b>根本不卖</b>。</p>
+    <div class="call red"><span class="label">一句话现实</span>截至 2026 年,<b>没有任何一款量产消费级 AR 眼镜能同时做到三件事</b>:① 户外大太阳下看得清 ② 不挂别的设备能撑一整天 ③ 原厂直接支持近视。每款都得牺牲其中一两样。所以对普通人来说,"<b>再等等</b>"是理性选择。</p></div>
+    <p class="plain">具体看:Even G1 能配近视、续航 1.5 天,但<b>大太阳下看不清</b>;XREAL One Pro 才 700 尼特、要外挂近视片、还得插主机;雷鸟想做全彩一体但价格 8999 起。各有各的妥协。</p>
+  </section>
+
+  <!-- GAP -->
+  <section id="gap">
+    <div class="sec-head"><span class="num">06</span><h2>这些我们没搞清</h2></div>
+    <p class="sec-sub">老实说:哪些说法被我们查掉了,哪些没查到。</p>
+    <p class="label" style="margin-top:24px;">查掉了 · 没采信</p>
+    <div class="gap killed"><h4>"AR 显示眼镜里 XREAL 占 36%、雷鸟占 8%"</h4><p>两条互相矛盾的份额数据都没能交叉验证(一条三票全否),纯 AR 显示子类的厂商排名证据不足,不敢写</p></div>
+    <div class="gap killed"><h4>"高通 AR1/AR1+/AR2 三档芯片严格对应三类眼镜"</h4><p>三票全否,芯片线和产品分类不是一一对应,不能这么说</p></div>
+    <p class="label" style="margin-top:32px;">没查到 · 待补</p>
+    <div class="gap"><h4>纯 AR 显示眼镜谁第一</h4><p>XREAL、雷鸟、Viture、Rokid 各占多少,证据相互打架,缺可信一手数据</p></div>
+    <div class="gap"><h4>华为、Rokid、小米的细节</h4><p>具体出货量、用什么芯片和光学方案,这几家覆盖很薄</p></div>
+    <div class="gap"><h4>企业级行业眼镜</h4><p>工业、医疗、物流这些专业场景的 AI 眼镜,这轮几乎没覆盖</p></div>
+    <div class="gap"><h4>市场规模的钱数预测</h4><p>现有证据多是出货量(多少台),缺权威的营收金额和长期增长率预测</p></div>
+  </section>
+
+  <!-- REF -->
+  <section id="ref">
+    <div class="sec-head"><span class="num">07</span><h2>出处</h2></div>
+    <p class="sec-sub">结论都能往回查。</p>
+    <div class="refs">
+      <div class="grp"><span class="label">市场数据</span>
+        <code>Counterpoint Research</code><code>IDC</code><code>CNBC</code><code>36kr</code>
+      </div>
+      <div class="grp"><span class="label">官方</span>
+        <code>qualcomm.com</code><code>meta.com / about.fb.com</code><code>evenrealities.com</code><code>shop.xreal.com</code><code>rayneo.com</code>
+      </div>
+      <div class="grp"><span class="label">评测/技术</span>
+        <code>Tom's Guide</code><code>virtual.reality.news</code><code>treeview.studio</code>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="label">AI 眼镜全球全景 · 2026.05.31</span>
+    <p>方法:多源搜索 → 抓取 → 112 agent 对抗式交叉验证 → 综合带引用(25 条核查、毙掉 3 条)。中立视角,配图为各品牌官网实拍。设计:Nothing style。</p>
+  </footer>
+
+</div>
+</body>
+</html>
