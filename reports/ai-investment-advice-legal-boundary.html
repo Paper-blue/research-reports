@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 能帮你荐股吗 — AI 投研产品的法律边界</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#16181c; --surface:#1c1f24; --surface-2:#23262c;
+    --border:#2a2e35; --border-vis:#3a3f47;
+    --t-disabled:#6b7280; --t-secondary:#9aa1ab; --t-primary:#d4d8de; --t-display:#eef0f3;
+    --accent:#e0494f; --success:#5bb06d; --warning:#d8b056;
+    --doto:"Doto","Space Mono",monospace;
+    --sans:"Space Grotesk","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    --mono:"Space Mono","JetBrains Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--black); color:var(--t-primary); font-family:var(--sans); font-weight:300; line-height:1.7; font-size:16px; -webkit-font-smoothing:antialiased; padding-bottom:96px;}
+  .wrap{max-width:920px; margin:0 auto; padding:0 24px;}
+  .label{font-family:var(--mono); text-transform:uppercase; letter-spacing:0.08em; font-size:11px; color:var(--t-secondary); font-weight:400;}
+  .mono{font-family:var(--mono);}
+  .dotbg{background-image:radial-gradient(circle, var(--border) 0.5px, transparent 0.5px); background-size:14px 14px;}
+
+  header{padding:96px 24px 64px; border-bottom:1px solid var(--border);}
+  header .inner{max-width:920px; margin:0 auto;}
+  header .kicker{font-family:var(--mono); text-transform:uppercase; letter-spacing:0.1em; font-size:11px; color:var(--t-secondary);}
+  header .kicker .dot{color:var(--accent);}
+  h1{font-family:var(--doto); font-weight:600; font-size:clamp(40px,8vw,80px); line-height:1.0; letter-spacing:-0.03em; color:var(--t-display); margin:24px 0 0;}
+  header .sub{font-size:18px; color:var(--t-secondary); max-width:640px; margin-top:24px; font-weight:300;}
+  .meta{display:flex; flex-wrap:wrap; gap:8px 24px; margin-top:48px;}
+  .meta div{display:flex; flex-direction:column; gap:4px;}
+  .meta .k{font-family:var(--mono); text-transform:uppercase; letter-spacing:0.08em; font-size:10px; color:var(--t-disabled);}
+  .meta .v{font-family:var(--mono); font-size:13px; color:var(--t-primary);}
+  .note{margin-top:40px; padding:14px 0; border-top:1px solid var(--border); font-size:13px; color:var(--t-disabled); max-width:700px;}
+  .note b{color:var(--t-secondary); font-weight:400;}
+
+  nav{position:sticky; top:0; z-index:20; background:rgba(22,24,28,0.9); border-bottom:1px solid var(--border); backdrop-filter:blur(8px);}
+  nav .inner{max-width:920px; margin:0 auto; padding:12px 24px; display:flex; gap:18px; flex-wrap:wrap;}
+  nav a{font-family:var(--mono); text-transform:uppercase; letter-spacing:0.06em; font-size:11px; color:var(--t-disabled); text-decoration:none; padding:4px 0;}
+  nav a:hover{color:var(--t-display);}
+
+  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); margin:64px 0; border:1px solid var(--border);}
+  .stat{background:var(--black); padding:28px 20px;}
+  .stat .n{font-family:var(--doto); font-weight:600; font-size:clamp(28px,5vw,46px); color:var(--t-display); line-height:1; letter-spacing:-0.02em;}
+  .stat .u{font-family:var(--mono); font-size:12px; color:var(--t-secondary); margin-top:10px; text-transform:uppercase; letter-spacing:0.06em;}
+
+  section{padding:72px 0 0;}
+  .sec-head{display:flex; align-items:baseline; gap:16px; margin-bottom:8px;}
+  .sec-head .num{font-family:var(--mono); font-size:13px; color:var(--accent); font-weight:700;}
+  h2{font-family:var(--sans); font-weight:500; font-size:28px; color:var(--t-display); letter-spacing:-0.01em;}
+  .sec-sub{color:var(--t-secondary); font-size:15px; margin:0 0 40px 40px; font-weight:300;}
+  @media(max-width:600px){.sec-sub{margin-left:0;}}
+
+  .track{padding:40px 0; border-top:1px solid var(--border);}
+  .track:first-of-type{border-top:none;}
+  .track-top{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;}
+  .track-top .tnum{font-family:var(--doto); font-weight:600; font-size:40px; color:var(--t-disabled); line-height:1; letter-spacing:-0.02em;}
+  .track-top h3{font-family:var(--sans); font-weight:500; font-size:22px; color:var(--t-display);}
+  .track-top .star{font-family:var(--mono); font-size:10px; padding:2px 8px; border-radius:999px; letter-spacing:0.06em; align-self:center;}
+  .star.green{color:var(--success); border:1px solid var(--success);}
+  .star.red{color:var(--accent); border:1px solid var(--accent);}
+  .star.warn{color:var(--warning); border:1px solid var(--warning);}
+  .track .one-liner{font-size:17px; color:var(--t-primary); margin:16px 0 0; font-weight:300;}
+  .track .plain{font-size:15px; color:var(--t-secondary); margin-top:12px; line-height:1.8;}
+  .track .plain b{color:var(--t-primary); font-weight:500;}
+
+  .demo{margin-top:28px; display:grid; grid-template-columns:1.2fr 1fr; gap:24px; align-items:start;}
+  @media(max-width:720px){.demo{grid-template-columns:1fr;}}
+  .demo .shot{border:1px solid var(--border-vis); border-radius:8px; overflow:hidden; background:var(--surface);}
+  .demo .shot img{width:100%; display:block;}
+  .demo .shot .cap{font-family:var(--mono); font-size:10px; color:var(--t-disabled); text-transform:uppercase; letter-spacing:0.06em; padding:8px 12px; border-top:1px solid var(--border); background:var(--surface);}
+  .demo .how .label{display:block; margin-bottom:10px;}
+  .demo .how p{font-size:14px; color:var(--t-secondary); line-height:1.75; margin-bottom:12px;}
+  .demo .how .ex{font-family:var(--mono); font-size:12.5px; color:var(--t-primary); background:var(--surface); border-left:2px solid var(--accent); padding:10px 14px; margin-top:6px; line-height:1.6;}
+
+  .tbl-wrap{margin-top:8px; overflow-x:auto;}
+  table{width:100%; border-collapse:collapse; font-size:14px; min-width:560px;}
+  th{font-family:var(--mono); text-transform:uppercase; letter-spacing:0.06em; font-size:10px; color:var(--t-secondary); text-align:left; padding:12px 16px; border-bottom:1px solid var(--border-vis); font-weight:400;}
+  td{padding:14px 16px; border-bottom:1px solid var(--border); color:var(--t-primary); font-weight:300; vertical-align:top;}
+  td.mono,th.mono{font-family:var(--mono);}
+  .yes{color:var(--success); font-family:var(--mono); font-size:13px;}
+  .no{color:var(--accent); font-family:var(--mono); font-size:13px;}
+  .qq{color:var(--warning); font-family:var(--mono); font-size:13px;}
+
+  .call{margin-top:24px; padding:16px 20px; background:var(--surface); border-left:2px solid var(--border-vis); font-size:14px; color:var(--t-secondary); line-height:1.75;}
+  .call.red{border-left-color:var(--accent);}
+  .call.green{border-left-color:var(--success);}
+  .call.warn{border-left-color:var(--warning);}
+  .call b{color:var(--t-primary); font-weight:500;}
+  .call .label{display:block; margin-bottom:8px;}
+
+  .layer{margin-top:24px; display:flex; flex-direction:column; gap:2px;}
+  .layer .row{display:grid; grid-template-columns:120px 1fr 88px; gap:16px; align-items:center; background:var(--surface); padding:16px 18px; border-left:3px solid var(--border-vis);}
+  .layer .row.safe{border-left-color:var(--success);}
+  .layer .row.lic{border-left-color:var(--warning);}
+  .layer .row.crime{border-left-color:var(--accent);}
+  .layer .row .ln{font-family:var(--mono); font-size:12px; color:var(--t-display); text-transform:uppercase; letter-spacing:0.05em;}
+  .layer .row .ld{font-size:13.5px; color:var(--t-secondary); line-height:1.6;}
+  .layer .row .lv{font-family:var(--mono); font-size:11px; text-align:right; text-transform:uppercase; letter-spacing:0.04em;}
+  .layer .row.safe .lv{color:var(--success);}
+  .layer .row.lic .lv{color:var(--warning);}
+  .layer .row.crime .lv{color:var(--accent);}
+  @media(max-width:600px){.layer .row{grid-template-columns:1fr; gap:6px;} .layer .row .lv{text-align:left;}}
+
+  .gap{padding:16px 0; border-bottom:1px solid var(--border);}
+  .gap h4{font-family:var(--sans); font-weight:500; font-size:15px; color:var(--t-primary); margin-bottom:6px;}
+  .gap p{font-size:13.5px; color:var(--t-secondary); font-weight:300;}
+
+  .refs{margin-top:24px;}
+  .refs .grp{padding:14px 0; border-bottom:1px solid var(--border);}
+  .refs .grp .label{display:block; margin-bottom:10px;}
+  .refs code{font-family:var(--mono); font-size:11.5px; color:var(--t-secondary); background:var(--surface); padding:3px 8px; border-radius:4px; margin:0 4px 4px 0; display:inline-block;}
+
+  footer{margin-top:80px; padding-top:32px; border-top:1px solid var(--border);}
+  footer .label{display:block; margin-bottom:8px;}
+  footer p{font-size:12px; color:var(--t-disabled); font-weight:300; line-height:1.7;}
+
+  @media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+
+<header class="dotbg">
+  <div class="inner">
+    <div class="kicker">法律科普 <span class="dot">●</span> 2026.05.31</div>
+    <h1>AI 能帮你<br>荐股吗</h1>
+    <p class="sub">市面上的 AI 选股、AI 投研助手越来越多，有的甚至直接给你报代码。它们到底合不合法？哪条线一碰就是犯罪？用一手法条和真实判例，把 AI 投研产品的法律边界讲给普通人听。</p>
+    <div class="meta">
+      <div><span class="k">主题</span><span class="v">AI 投研 · 证券合规</span></div>
+      <div><span class="k">立场</span><span class="v">中立 · 投资者保护</span></div>
+      <div><span class="k">依据</span><span class="v">一手法条+判例</span></div>
+      <div><span class="k">配图</span><span class="v">官网实拍</span></div>
+    </div>
+    <p class="note"><b>说明</b> 本文是一份面向普通投资者的法律科普，不是投资建议，也不构成法律意见。所有法律结论都来自公开的一手来源（国务院公报、证监会、最高法/最高检公报）交叉验证。提到具体产品仅作行业现状说明，不评判其合规与否，不替任何产品站台。证券市场有风险，远离代客理财、免费荐股等非法证券活动。</p>
+  </div>
+</header>
+
+<nav>
+  <div class="inner">
+    <a href="#why">为什么聊这个</a>
+    <a href="#three">三层边界</a>
+    <a href="#crime">什么会犯罪</a>
+    <a href="#myth">两个误区</a>
+    <a href="#market">市面现状</a>
+    <a href="#protect">怎么保护自己</a>
+    <a href="#ref">出处</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div class="stats">
+    <div class="stat"><div class="n">4</div><div class="u">荐股软件认定功能</div></div>
+    <div class="stat"><div class="n">100<span style="font-size:0.5em">万</span></div><div class="u">入罪经营额门槛</div></div>
+    <div class="stat"><div class="n">5<span style="font-size:0.5em">年</span></div><div class="u">判例量刑(起)</div></div>
+    <div class="stat"><div class="n">2012</div><div class="u">荐股软件规定施行</div></div>
+  </div>
+
+  <section id="why">
+    <div class="sec-head"><span class="num">01</span><h2>为什么要聊这件事</h2></div>
+    <p class="sec-sub">AI 报代码很爽，但"爽"和"合法"是两回事。普通人最该先搞清楚的，恰恰是这条线。</p>
+    <p class="track plain" style="border:none;padding-top:0;">这两年，打开炒股 App，AI 助手能用大白话帮你选股；有的产品你问"哪只股票有潜力"，它直接给你报出代码。看起来很方便。但很多人没意识到：<b>在中国，对外公开、收费地提供"具体股票该买该卖"的建议，是受严格监管的持牌业务，碰错了不是罚款，是刑事犯罪。</b></p>
+    <p class="track plain" style="border:none;padding-top:8px;">这不是吓唬人。证监会、最高法都有明确的规则和判例。理解这条边界，对两种人有用：<b>普通投资者</b>能看懂"为什么有的 AI 敢报代码、有的只敢给方法"，从而判断一个产品靠不靠谱、自己会不会被割韭菜；<b>想做这类产品的人</b>能知道哪些功能是红线。本文站在投资者保护的角度，把规则讲清楚。</p>
+  </section>
+
+  <section id="three">
+    <div class="sec-head"><span class="num">02</span><h2>三层边界：从合法到坐牢</h2></div>
+    <p class="sec-sub">关键不在"AI 帮没帮你下单"，而在"它有没有针对<b>具体某只股票</b>给你分析、预测、买卖建议"。这是法律切的那一刀。</p>
+
+    <div class="layer">
+      <div class="row safe">
+        <span class="ln">信息层</span>
+        <span class="ld">数据聚合、历史行情、公告整理——纯信息工具，不对具体股票下判断。</span>
+        <span class="lv">合法 · 无需牌照</span>
+      </div>
+      <div class="row lic">
+        <span class="ln">分析层</span>
+        <span class="ld">针对<b>具体某只股票</b>给分析意见、价格预测、选不选的建议——这就是法律说的"荐股"。</span>
+        <span class="lv">需持牌</span>
+      </div>
+      <div class="row crime">
+        <span class="ln">执行层</span>
+        <span class="ld">针对用户<b>名下的具体账户情况</b>告诉他怎么调整、什么时机买卖——属投资顾问业务，门槛更高。</span>
+        <span class="lv">需持牌 · 最易触刑</span>
+      </div>
+      <div class="row crime">
+        <span class="ln">代客理财</span>
+        <span class="ld">拿到你的账户授权，替你直接操作买卖（全权委托）。</span>
+        <span class="lv">法律直接禁止</span>
+      </div>
+    </div>
+
+    <div class="call"><span class="label">什么算"荐股软件"</span>证监会 2012 年的规定（2013 年施行，至今有效）讲得很死：一个软件/工具，只要做了下面<b>四件事中的任意一件</b>，就是"荐股软件"——① 对<b>具体股票</b>给投资分析意见或预测价格走势；② 给<b>具体股票</b>的选择建议；③ 给<b>具体股票</b>的买卖时机建议；④ 其他证券投资的分析、预测或建议。<br><br>反过来，<b>只做信息聚合、历史数据的工具不算荐股软件</b>——这就是合法的安全区。</div>
+
+    <div class="call red"><span class="label">为什么"收费"是关键词</span>同一份规定还明确：<b>把荐股软件卖给投资者、或提供给投资者并从中获利（直接或间接），就属于"从事证券投资咨询业务"，必须经证监会许可</b>。换句话说，"卖会员的荐股 App"在法律上不是普通生意，是持牌的特许经营。没牌照就做，违法。</div>
+  </section>
+
+  <section id="crime">
+    <div class="sec-head"><span class="num">03</span><h2>什么情况会构成犯罪</h2></div>
+    <p class="sec-sub">无证 + 收费 + 面向不特定的大众，三个条件凑齐、数额够大，就从"行政违规"升级成"刑事犯罪"。</p>
+
+    <div class="track" style="border:none;padding-top:0;">
+      <p class="plain"><b>罪名</b>：刑法第 225 条非法经营罪。<b>入罪门槛</b>（2022 年上调后）：违法经营数额达到 <b>100 万元以上</b>，或违法所得 <b>10 万元以上</b>，应予立案追诉。</p>
+      <p class="plain" style="margin-top:14px;"><b>真实判例</b>：最高法公报案例中，向不特定社会公众有偿提供/代理销售证券相关服务的，三名被告分别被判 <b>5 年到 5 年 6 个月</b>有期徒刑，<b>各处罚金 250 万元</b>。这不是理论风险。</p>
+    </div>
+
+    <div class="call warn"><span class="label">司法实务的三个定性要素</span><b>① 有偿</b>（收了钱）<b>② 对象不特定</b>（面向广泛的大众，而非熟人小圈）<b>③ 没有资质</b>。三者齐备，就可能被认定为非法经营。值得注意：无偿的经验分享，和有偿的咨询服务，在法律定性上是不一样的——<b>"收费"本身就是个放大风险的关键变量</b>。</div>
+
+    <div class="call"><span class="label">一处学术争议（诚实披露）</span>学界有少数观点认为，证券投资咨询属于"非核心的外延业务"，无证经营不该一律按非法经营罪处理。但这是<b>学者主张，不是生效判例或司法解释</b>，实务中多数仍采"所有证券业务无证都可能入罪"的广义认定。也就是说：不能指望靠这个争议给自己开脱。</div>
+  </section>
+
+  <section id="myth">
+    <div class="sec-head"><span class="num">04</span><h2>两个普遍的误区</h2></div>
+    <p class="sec-sub">很多人以为这两招能"绕过去"，其实都拦不住。这部分对保护自己尤其重要。</p>
+
+    <div class="track">
+      <div class="track-top"><span class="tnum">误</span><h3>"我只给信息，不替你操作，就没事"</h3><span class="star red">不成立</span></div>
+      <p class="plain">法律的红线<b>不在"谁点的下单按钮"</b>，而在"<b>有没有针对具体股票给了建议</b>"。"你手上这只股该减到多少仓"——只要指向了具体品种，不管最后是谁动的手，都落进了需持牌的范畴。"信息"和"代操作"的区分，挡不住"是否针对具体品种"这把刀。</p>
+    </div>
+
+    <div class="track">
+      <div class="track-top"><span class="tnum">误</span><h3>"写一句'不构成投资建议'就免责"</h3><span class="star red">不成立</span></div>
+      <p class="plain">监管遵循"<b>实质重于形式</b>"——看你实际干了什么，不看你声明了什么。相关管理办法明确禁止"<b>变相从事</b>"证券投资咨询，连"设计、运营 AI 算法和模型"的人都被纳入须持证的范围。所以"我只是个 AI 工具"也说不通。</p>
+      <p class="plain" style="margin-top:12px;">最有力的证据是真实执法：<b>2025 年 12 月，网信办和证监会联合行动</b>，整治那些"晒群聊收益截图、暗示能预测、诱导粉丝买入具体股票"的账号，相关账号被关停。注意——这些账号<b>连"买入建议"四个字都没明说</b>，只是"晒收益+暗示"，照样被穿透认定为非法荐股。<b>一句免责声明，防御力为零。</b></p>
+    </div>
+  </section>
+
+  <section id="market">
+    <div class="sec-head"><span class="num">05</span><h2>市面上的产品现状</h2></div>
+    <p class="sec-sub">看懂边界后再看市场：为什么大平台的 AI 敢报代码？因为它们背后是持牌主体。普通人和小工具没有这层护城河。</p>
+
+    <div class="track">
+      <div class="track-top"><span class="tnum">01</span><h3>同花顺 · 问财</h3><span class="star green">自然语言选股</span></div>
+      <p class="one-liner">用大白话描述你想要什么样的股票，它直接帮你筛出来，不用学写公式。</p>
+      <p class="plain">国内落地最成功的自然语言选股工具之一。背后是聊天大模型 + RAG（<span class="mono" style="color:var(--t-disabled)">RAG = 让 AI 先查资料再回答，不瞎编</span>）。"一句话生成选股策略"，把自然语言转成可执行的筛选条件。</p>
+      <div class="demo">
+        <div class="shot">
+          <img src="assets/shots/wencai.jpg" alt="同花顺问财界面">
+          <div class="cap">iwencai.com · 官网实拍</div>
+        </div>
+        <div class="how">
+          <span class="label">它做到哪一层</span>
+          <p>主要是"按条件筛选"（信息/分析层）：你给条件，它列出符合的一批股票。据 2025 年 6 月南方都市报的调查，问财在问答中也可被引导给出具体股票，但当时回答<b>未做内容标识</b>——这正是监管关注的灰色地带。</p>
+          <div class="ex">"市盈率低于20、营收增长超过10%的股票" → 列出符合的一串</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="track">
+      <div class="track-top"><span class="tnum">02</span><h3>东方财富 · 妙想</h3><span class="star green">已备案</span></div>
+      <p class="one-liner">东方财富自研的财经大模型，能问答、诊股、分析行情、解读研报，App 内免费开放。</p>
+      <p class="plain">2025 年 3 月完成<b>国家网信办生成式 AI 服务备案</b>（属国内首批通过备案的金融大模型），定位"投研与交易辅助"。据南都同一调查，妙想给出股票代码时<b>附有明显的免责声明和"AI 生成"标识</b>——比同行更注意内容打标。</p>
+      <div class="demo">
+        <div class="shot">
+          <img src="assets/shots/miaoxiang.jpg" alt="东方财富妙想界面">
+          <div class="cap">ai.eastmoney.com · 官网实拍</div>
+        </div>
+        <div class="how">
+          <span class="label">它做到哪一层</span>
+          <p>问答 + 诊股 + 行情分析（信息/分析层）。<b>关键背景：东方财富、同花顺都是有相关金融业务资质的上市公司</b>，它们的 AI 敢逼近分析层，靠的是背后的<b>持牌主体资质</b>，不是免责措辞。</p>
+          <div class="ex">"分析这只股最近的资金流向" → 文字+图表给你画出来</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="call red"><span class="label">普通人最该记住的一点</span>大平台敢做到分析层，是因为它们<b>有牌照、有合规团队、能做内容备案打标</b>。一个没有资质的小产品、个人账号、所谓"内部荐股群"，做同样的事就是<b>裸奔</b>——而被割韭菜的，往往是相信这些无证荐股的普通投资者。<b>看到"免费荐股""保证收益""代客理财"，基本可以直接判定为非法证券活动。</b></p></div>
+  </section>
+
+  <section id="protect">
+    <div class="sec-head"><span class="num">06</span><h2>普通人怎么保护自己</h2></div>
+    <p class="sec-sub">把上面的规则翻译成几条能直接用的自保清单。</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>遇到这种情况</th><th class="mono">信号</th><th>怎么办</th></tr></thead>
+        <tbody>
+          <tr><td>有人/某 App 收费"推荐具体股票代码"</td><td><span class="no">高危</span></td><td>查它有没有证券投资咨询资质；没有资质收费荐股属违法，别信</td></tr>
+          <tr><td>"加群免费荐股""保证收益""带你抄底"</td><td><span class="no">高危</span></td><td>典型非法证券活动话术，远离</td></tr>
+          <tr><td>"代客理财""把账户交给我操盘"</td><td><span class="no">高危</span></td><td>全权委托被法律直接禁止，正规机构都不能做</td></tr>
+          <tr><td>AI 给的结论后面跟一句"不构成投资建议"</td><td><span class="qq">谨慎</span></td><td>这句话不代表它合规，也不代表结论可靠，自己判断</td></tr>
+          <tr><td>纯数据、行情、公告整理的工具</td><td><span class="yes">较安全</span></td><td>合法的信息工具，但数据≠建议，决策仍要自己负责</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="call green"><span class="label">一句话总结</span>合法的安全区是：<b>纯信息/数据/历史行情整理 + 不针对具体股票给分析预测和买卖建议 + 不替你调仓 + 不碰你的账户</b>。越过任何一条，要么需要牌照，要么直接踩刑事红线。AI 再聪明，也改变不了这条法律边界。</div>
+  </section>
+
+  <section id="ref">
+    <div class="sec-head"><span class="num">07</span><h2>出处</h2></div>
+    <p class="sec-sub">法律结论均来自公开一手来源，可往回查。</p>
+    <div class="refs">
+      <div class="grp"><span class="label">法规 · 一手</span>
+        <code>《证券法》第160条</code><code>荐股软件监管暂行规定 证监会公告[2012]40号</code><code>证券、期货投资咨询管理暂行办法</code><code>证券投资顾问业务暂行规定</code><code>证券基金投资咨询业务管理办法</code>
+      </div>
+      <div class="grp"><span class="label">判例与立案标准</span>
+        <code>最高法公报 非法经营罪案例</code><code>最高检、公安部立案追诉标准(二)第71条</code>
+      </div>
+      <div class="grp"><span class="label">监管动向与行业调查</span>
+        <code>网信办+证监会 2025.12 联合执法</code><code>南方都市报 2025.06 AI荐股调查</code><code>东方财富妙想 网信办备案</code>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="label">AI 投研产品的法律边界 · 法律科普 · 2026.05.31</span>
+    <p>方法：多源搜索 → 抓取 → 对抗式交叉验证 → 综合带引用。中立视角，面向普通投资者的科普，不构成投资建议或法律意见。设计：Nothing style。</p>
+  </footer>
+
+</div>
+</body>
+</html>
